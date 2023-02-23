@@ -37,27 +37,70 @@ export default function Register() {
         try {
             await createUserWithEmailAndPassword(auth, regEmail, regPassword);
             // ========================================================================
-            const storageRef = ref(storage, "images/" + regName);
-            const uploadTask = uploadBytesResumable(storageRef, regPic);
 
-            uploadTask.on(
+            /** @type {any} */
+            const metadata = {
+                contentType: "image/jpeg",
+            };
+
+            const storageRef = ref(storage, "images/" + regName);
+            const uploadTask = uploadBytesResumable(
+                storageRef,
+                regPic,
+                metadata
+            );
+            let progress;
+            await uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    progress =
+                        (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log("Upload is " + progress + "% done");
+                    switch (snapshot.state) {
+                        case "paused":
+                            console.log("Upload is paused");
+                            break;
+                        case "running":
+                            console.log("Upload is running");
+                            break;
+                    }
+                },
                 (error) => {
-                    setRegError(error);
+                    switch (error.code) {
+                        case "storage/unauthorized":
+                            setSubmitState({
+                                ...submitState,
+                                loading: false,
+                                error: e.message,
+                            });
+                            break;
+                        case "storage/canceled":
+                            setSubmitState({
+                                ...submitState,
+                                loading: false,
+                                error: e.message,
+                            });
+                            break;
+                        case "storage/unknown":
+                            break;
+                    }
                 },
                 () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then(
-                        async (downloadURL) => {
-                            await setDoc(doc(db, "Users", regEmail), {
-                                id: regEmail,
-                                name: regName,
-                                status: "online",
-                                picURL: downloadURL,
-                            });
-                        }
-                    );
+                    if (progress === 100) {
+                        getDownloadURL(uploadTask.snapshot.ref).then(
+                            async (downloadURL) => {
+                                await setDoc(doc(db, "Users", regEmail), {
+                                    id: regEmail,
+                                    name: regName,
+                                    status: "online",
+                                    picURL: downloadURL,
+                                });
+                            }
+                        );
+                        navigate("/signin");
+                    }
                 }
             );
-            navigate("/signin");
 
             // ===============================================================================
         } catch (e) {

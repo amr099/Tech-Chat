@@ -9,12 +9,14 @@ import registerImg from "../imgs/register.jpg";
 
 export default function Register() {
     const [regError, setRegError] = useState("");
+    const [loading, setloading] = useState(false);
     const navigate = useNavigate();
 
     const usersCol = collection(db, "Users");
-    const [users, loading, error, snapshot] = useCollectionData(usersCol);
+    const [users, uloading, error, snapshot] = useCollectionData(usersCol);
 
     const register = async (e) => {
+        setloading(true);
         e.preventDefault();
         let regName = e.target[0].value;
         let regEmail = e.target[1].value;
@@ -98,6 +100,7 @@ export default function Register() {
                             }
                         );
                         navigate("/signin");
+                        setloading(false);
                     }
                 }
             );
@@ -107,16 +110,22 @@ export default function Register() {
             console.log(e.message);
             if (e.message === "Firebase: Error (auth/email-already-in-use).") {
                 setRegError("Email is already exists.");
+                setloading(false);
+                return;
             }
 
             if (e.message === "Firebase: Error (auth/invalid-email).") {
                 setRegError("Email is Invalid.");
+                setloading(false);
+                return;
             }
             if (
                 e.message ===
                 "Firebase: Password should be at least 6 characters (auth/weak-password)."
             ) {
                 setRegError("Password should be at least 6 characters.");
+                setloading(false);
+                return;
             }
         }
     };
@@ -140,10 +149,15 @@ export default function Register() {
                     </div>
 
                     <input type='file' className='file-input' />
-
-                    <button className='register-button'>
-                        <i className='bi bi-arrow-right'></i>
-                    </button>
+                    {loading ? (
+                        <button className='register-button' disabaled>
+                            Loading ...
+                        </button>
+                    ) : (
+                        <button className='register-button'>
+                            <i className='bi bi-arrow-right'></i>
+                        </button>
+                    )}
                 </form>
                 <h3>
                     Already have an email{" "}

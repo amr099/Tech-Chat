@@ -1,4 +1,5 @@
-Tech Chat App
+# Tech Chat App
+
 Welcome to the Tech Chatting App! This is a web application designed for tech enthusiasts to engage in discussions about various topics related to technology. You can access the live version of the app here.
 
 ## Features
@@ -12,15 +13,15 @@ Welcome to the Tech Chatting App! This is a web application designed for tech en
 
 To run the project locally, follow these steps:
 
-# Clone the repository:
+#### Clone the repository:
 
 - git clone https://github.com/amr099/tech-chatting-app.git
 
-# Navigate to the project directory:
+#### Navigate to the project directory:
 
 - cd tech-chatting-app
 
-# Install dependencies:
+#### Install dependencies:
 
 - npm install
 - npm run dev

@@ -19,7 +19,7 @@ To run the project locally, follow these steps:
 
 #### Navigate to the project directory:
 
-- cd tech-chatting-app
+- cd Tech-Chat
 
 #### Install dependencies:
 
